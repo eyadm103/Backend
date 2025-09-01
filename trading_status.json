@@ -2,7 +2,7 @@
     {
         "id": 1,
         "bot_status": "Running",
-        "last_update": "2025-09-01T18:43:38.008841",
+        "last_update": "2025-09-01T19:09:54.083611",
         "equity": "999022.1000",
         "cash": "999022.1000",
         "buying_power": "3996088.4000",
@@ -11,10 +11,12 @@
         "losses": 0,
         "total_profit": "0.0000",
         "total_loss": "0.0000",
-        "symbol": null,
+        "ticker": null,
         "qty": "0.0000",
         "entry_price": "0.0000",
         "current_value": "0.0000",
-        "unrealized_pl": "0.0000"
+        "unrealized_pl": "0.0000",
+        "current_price": "174.2150",
+        "last_action": "None"
     }
 ]

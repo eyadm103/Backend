@@ -36,6 +36,7 @@ daily_stats = {
 }
 highest_profit_pct = 0.0
 last_trade_date = None
+last_action = "None" # Added: New global variable to track the last action
 
 # --- Helper Functions ---
 def log_action(message):
@@ -113,7 +114,8 @@ def generate_performance_dashboard():
     except Exception as e:
         log_action(f"Error generating performance dashboard: {e}")
 
-def update_status_json(account_info, positions, daily_stats, current_price):
+# Modified: Added last_action and current_price parameters
+def update_status_json(account_info, positions, daily_stats, current_price, last_action):
     try:
         status_data = {
             "id": 1,
@@ -127,11 +129,13 @@ def update_status_json(account_info, positions, daily_stats, current_price):
             "losses": daily_stats['losses'],
             "total_profit": f"{daily_stats['total_profit']:.4f}",
             "total_loss": f"{daily_stats['total_loss']:.4f}",
-            "symbol": None,
+            "ticker": None, # Modified: Changed 'symbol' to 'ticker' for clarity
             "qty": "0.0000",
             "entry_price": "0.0000",
             "current_value": "0.0000",
-            "unrealized_pl": "0.0000"
+            "unrealized_pl": "0.0000",
+            "current_price": f"{current_price:.4f}" if current_price else "N/A", # Added: Current Price
+            "last_action": last_action # Added: Last Action
         }
         
         if positions:
@@ -140,7 +144,7 @@ def update_status_json(account_info, positions, daily_stats, current_price):
             unrealized_pl = (current_price - entry_price) * float(position.qty) if current_price else 0.0
             
             status_data.update({
-                "symbol": position.symbol,
+                "ticker": position.symbol,
                 "qty": f"{float(position.qty):.4f}",
                 "entry_price": f"{entry_price:.4f}",
                 "current_value": f"{float(position.market_value):.4f}",
@@ -249,7 +253,8 @@ class Command(BaseCommand):
         global daily_stats
         global last_trade_date
         global highest_profit_pct
-        
+        global last_action # Added: New global variable
+
         log_action("--- Algorithmic Trading System Initiated ---")
         
         try:
@@ -292,6 +297,7 @@ class Command(BaseCommand):
                         'daily_high_equity': float(account_info_eod.equity)
                     }
                     highest_profit_pct = 0.0
+                    last_action = "None" # Added: Reset last_action
                     last_trade_date = now.date()
                 
                 market_is_open, market_open_time = is_market_open()
@@ -303,7 +309,8 @@ class Command(BaseCommand):
                         account_info = api.get_account()
                         positions = api.list_positions()
                         current_price = get_latest_price_from_alpaca(api, settings.GLOBAL_STOCK_TICKER)
-                        update_status_json(account_info, positions, daily_stats, current_price)
+                        # Modified: Passed last_action and current_price
+                        update_status_json(account_info, positions, daily_stats, current_price, last_action)
                         time.sleep(120)
                         continue
                 
@@ -312,7 +319,8 @@ class Command(BaseCommand):
                     account_info = api.get_account()
                     positions = api.list_positions()
                     current_price = get_latest_price_from_alpaca(api, settings.GLOBAL_STOCK_TICKER)
-                    update_status_json(account_info, positions, daily_stats, current_price)
+                    # Modified: Passed last_action and current_price
+                    update_status_json(account_info, positions, daily_stats, current_price, last_action)
                     time.sleep(120)
                     continue
                     
@@ -326,7 +334,8 @@ class Command(BaseCommand):
                     log_action(f"Daily loss limit reached! Halting trading.")
                     positions = api.list_positions()
                     current_price = get_latest_price_from_alpaca(api, settings.GLOBAL_STOCK_TICKER)
-                    update_status_json(account_info, positions, daily_stats, current_price)
+                    # Modified: Passed last_action and current_price
+                    update_status_json(account_info, positions, daily_stats, current_price, last_action)
                     time.sleep(120)
                     continue
 
@@ -336,7 +345,8 @@ class Command(BaseCommand):
                     log_action("Insufficient daily data for 200-day SMA. Skipping.")
                     positions = api.list_positions()
                     current_price = get_latest_price_from_alpaca(api, settings.GLOBAL_STOCK_TICKER)
-                    update_status_json(account_info, positions, daily_stats, current_price)
+                    # Modified: Passed last_action and current_price
+                    update_status_json(account_info, positions, daily_stats, current_price, last_action)
                     time.sleep(120)
                     continue
                 
@@ -351,7 +361,8 @@ class Command(BaseCommand):
                     log_action("Failed to calculate features. Skipping.")
                     positions = api.list_positions()
                     current_price = get_latest_price_from_alpaca(api, settings.GLOBAL_STOCK_TICKER)
-                    update_status_json(account_info, positions, daily_stats, current_price)
+                    # Modified: Passed last_action and current_price
+                    update_status_json(account_info, positions, daily_stats, current_price, last_action)
                     time.sleep(120)
                     continue
                 
@@ -361,7 +372,8 @@ class Command(BaseCommand):
                 if current_price is None:
                     log_action("Could not fetch live price from Alpaca. Skipping.")
                     positions = api.list_positions()
-                    update_status_json(account_info, positions, daily_stats, current_price)
+                    # Modified: Passed last_action and current_price
+                    update_status_json(account_info, positions, daily_stats, current_price, last_action)
                     time.sleep(120)
                     continue
 
@@ -373,7 +385,8 @@ class Command(BaseCommand):
                 if not positions:
                     if daily_stats['trades'] >= settings.MAX_TRADES_PER_DAY:
                         log_action(f"Daily trade limit reached. No more trades today.")
-                        update_status_json(account_info, positions, daily_stats, current_price)
+                        # Modified: Passed last_action and current_price
+                        update_status_json(account_info, positions, daily_stats, current_price, last_action)
                         time.sleep(120)
                         continue
                     
@@ -452,6 +465,7 @@ class Command(BaseCommand):
                                     time_in_force='day'
                                 )
                                 daily_stats['trades'] += 1
+                                last_action = "Buy" # Added: Update last_action
                                 log_action(f"BUY executed for {shares_to_buy} shares at ${current_price:.2f}.")
                                 last_trade_date = now.date()
                             except Exception as e:
@@ -520,6 +534,7 @@ class Command(BaseCommand):
                             else:
                                 daily_stats['losses'] += 1
                                 daily_stats['total_loss'] += pl
+                            last_action = "Sell" # Added: Update last_action
                             highest_profit_pct = 0.0 
                         except Exception as e:
                             log_action(f"API error during sell order: {e}")
@@ -535,6 +550,11 @@ class Command(BaseCommand):
                 if daily_stats['trades'] > 0:
                     log_daily_summary(daily_stats, end_of_day_equity)
                     generate_performance_dashboard()
+                
+                positions = api.list_positions()
+                current_price = get_latest_price_from_alpaca(api, settings.GLOBAL_STOCK_TICKER)
+                # Modified: Passed last_action and current_price
+                update_status_json(account_info_eod, positions, daily_stats, current_price, last_action)
                 raise
             except Exception as e:
                 log_action(f"A fatal error occurred in the trading loop: {e}")
@@ -546,7 +566,8 @@ class Command(BaseCommand):
                     account_info = api.get_account()
                     positions = api.list_positions()
                     current_price = get_latest_price_from_alpaca(api, settings.GLOBAL_STOCK_TICKER)
-                    update_status_json(account_info, positions, daily_stats, current_price)
+                    # Modified: Passed last_action and current_price
+                    update_status_json(account_info, positions, daily_stats, current_price, last_action)
                 except Exception as e:
                     log_action(f"Error during final JSON update: {e}")
                 time.sleep(120)
