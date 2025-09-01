@@ -1,0 +1,20 @@
+[
+    {
+        "id": 1,
+        "bot_status": "Running",
+        "last_update": "2025-09-01T18:43:38.008841",
+        "equity": "999022.1000",
+        "cash": "999022.1000",
+        "buying_power": "3996088.4000",
+        "trades_today": 0,
+        "wins": 0,
+        "losses": 0,
+        "total_profit": "0.0000",
+        "total_loss": "0.0000",
+        "symbol": null,
+        "qty": "0.0000",
+        "entry_price": "0.0000",
+        "current_value": "0.0000",
+        "unrealized_pl": "0.0000"
+    }
+]

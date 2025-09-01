@@ -1,0 +1,308 @@
+[2025-08-21 01:27:52] --- Automated trading system started ---
+[2025-08-21 01:27:52] ❌ Error: Model file not found at: D:\VE\trading_backend\core\management\commands\core\model\final_model.pkl
+[2025-08-21 01:28:37] --- Automated trading system started ---
+[2025-08-21 01:28:43] ✅ Model loaded successfully.
+[2025-08-21 01:28:43] ✅ Successfully connected to Alpaca API.
+[2025-08-21 01:28:43] 📊 Account status: ACTIVE
+[2025-08-21 01:28:43] 💰 Current portfolio value: $100186.38
+[2025-08-21 01:28:44]   - Market is currently closed. Sleeping for 10 minutes.
+[2025-08-21 01:28:45] ✅ Status file updated successfully.
+[2025-08-21 01:37:04] --- Automated trading system stopped by user ---
+[2025-08-21 01:41:37] Loading the model...
+[2025-08-21 01:41:44] ✅ Model loaded successfully.
+[2025-08-21 01:41:44] Connecting to Alpaca API...
+[2025-08-21 01:41:45] ✅ Successfully connected to Alpaca API.
+[2025-08-21 01:41:45] 📊 Account status: ACTIVE
+[2025-08-21 01:41:45] 💰 Current portfolio value: $100173.51
+[2025-08-21 01:41:45] --- Automated trading system started ---
+[2025-08-21 01:41:45] Forced Trade Mode is inactive.
+[2025-08-21 01:41:45] The code will now check the market every 180 seconds during market hours.
+[2025-08-21 01:41:46] Checking the market...
+[2025-08-21 01:41:46]   - Market is currently closed. Sleeping for 10 minutes.
+[2025-08-21 01:41:47] ✅ Status file updated successfully.
+[2025-08-21 01:47:38] --- Automated trading system stopped by user ---
+[2025-08-21 01:48:01] Loading the model...
+[2025-08-21 01:48:08] ✅ Model loaded successfully.
+[2025-08-21 01:48:08] Connecting to Alpaca API...
+[2025-08-21 01:48:09] ✅ Successfully connected to Alpaca API.
+[2025-08-21 01:48:09] 📊 Account status: ACTIVE
+[2025-08-21 01:48:09] 💰 Current portfolio value: $100182.41
+[2025-08-21 01:48:09] --- Automated trading system started ---
+[2025-08-21 01:48:09] Forced Trade Mode is inactive.
+[2025-08-21 01:48:09] The code will now check the market every 180 seconds during market hours.
+[2025-08-21 01:48:09] Checking the market...
+[2025-08-21 01:48:10]   - Market is currently closed. Sleeping for 10 minutes.
+[2025-08-21 01:48:10] ✅ Status file updated successfully.
+[2025-08-21 01:50:50] --- Automated trading system stopped by user ---
+[2025-08-21 01:52:54] --- Automated trading system started as a Django Management Command ---
+[2025-08-21 01:52:54] Forced Trade Mode is inactive.
+[2025-08-21 01:52:54] Loading the model...
+[2025-08-21 01:53:01] ✅ Model loaded successfully.
+[2025-08-21 01:53:01] Connecting to Alpaca API...
+[2025-08-21 01:53:02] ✅ Successfully connected to Alpaca API.
+[2025-08-21 01:53:02] 📊 Account status: ACTIVE
+[2025-08-21 01:53:02] 💰 Current portfolio value: $100184.37
+[2025-08-21 01:53:03]   - Market is currently closed. Sleeping for 10 minutes.
+[2025-08-21 01:53:03] ✅ Status file updated successfully.
+[2025-08-21 02:06:04]   - Market is currently closed. Sleeping for 10 minutes.
+[2025-08-21 02:06:04] ✅ Status file updated successfully.
+[2025-09-01 18:32:26] --- Algorithmic Trading System Initiated ---
+[2025-09-01 18:32:26] Loading the machine learning model...
+[2025-09-01 18:32:26] Error: Model file not found at: D:\VE\trading_backend\model\final_model.pkl
+[2025-09-01 18:33:12] --- Algorithmic Trading System Initiated ---
+[2025-09-01 18:33:12] Loading the machine learning model...
+[2025-09-01 18:33:13] Model loaded successfully.
+[2025-09-01 18:33:13] Connecting to Alpaca API...
+[2025-09-01 18:33:14] Connection to Alpaca API successful.
+[2025-09-01 18:33:14] Account Status: ACTIVE
+[2025-09-01 18:33:14] Current Portfolio Equity: $999022.10
+[2025-09-01 18:33:14] --- Daily Performance Summary ---
+[2025-09-01 18:33:14] Date: 2025-09-01
+[2025-09-01 18:33:14] Total Trades: 0
+[2025-09-01 18:33:14] Total P/L: $0.00
+[2025-09-01 18:33:14] Win Rate: 0.00%
+[2025-09-01 18:33:14] Daily High Equity: $999022.10
+[2025-09-01 18:33:14] Daily End Equity: $999022.10
+[2025-09-01 18:33:14] -------------------------------
+[2025-09-01 18:33:14] Performance data is empty. Cannot generate dashboard.
+[2025-09-01 18:33:14] New day detected. Resetting daily statistics.
+[2025-09-01 18:33:15] Fetching daily data for long-term trend analysis...
+[2025-09-01 18:33:16] Fetching intraday data for immediate signals...
+[2025-09-01 18:33:17] --- Latest Feature Data ---
+open                          174.0300
+high                          174.2800
+low                           173.8200
+close                         174.2800
+volume                    5049820.0000
+dividends                       0.0000
+stock splits                    0.0000
+volume_change_pct              99.1657
+macd_line                       0.0115
+macd_signal                     0.0304
+macd_diff                      -0.0189
+rsi_14                         55.8277
+atr_14                          0.2462
+bb_hband                      174.4969
+bb_lband                      173.6936
+bb_wband                        0.4614
+sma_20                        174.0953
+daily_range_pct                 0.2639
+volatility_5_std                0.2318
+volatility_20_std               0.2060
+year                         2025.0000
+month                           8.0000
+dayofweek                       4.0000
+lag_1_close_return              0.1465
+lag_5_close_return              0.0644
+lag_20_close_return             0.0877
+gap_open_close_prev_pct         0.0029
+high_low_spread                 0.4600
+open_close_spread               0.2500
+momentum_10d                    0.0850
+---------------------------
+[2025-09-01 18:33:17] Current live price: $174.22
+[2025-09-01 18:33:17] Trend Check: Close: 174.28, SMA200: 138.74. Uptrend: True
+[2025-09-01 18:33:17] Volatility Check: Current ATR: 0.2462, Avg ATR: 0.1829. Normal: True
+[2025-09-01 18:33:17] No strong buy signal. Bot remains patient. Prediction: -1.
+[2025-09-01 18:33:17] --- Cycle End ---
+[2025-09-01 18:33:18] Trading status saved to bot_status.json successfully.
+[2025-09-01 18:35:19] Fetching daily data for long-term trend analysis...
+[2025-09-01 18:35:19] Fetching intraday data for immediate signals...
+[2025-09-01 18:35:20] --- Latest Feature Data ---
+open                          174.0300
+high                          174.2800
+low                           173.8200
+close                         174.2800
+volume                    5049820.0000
+dividends                       0.0000
+stock splits                    0.0000
+volume_change_pct              99.1657
+macd_line                       0.0115
+macd_signal                     0.0304
+macd_diff                      -0.0189
+rsi_14                         55.8277
+atr_14                          0.2462
+bb_hband                      174.4969
+bb_lband                      173.6936
+bb_wband                        0.4614
+sma_20                        174.0953
+daily_range_pct                 0.2639
+volatility_5_std                0.2318
+volatility_20_std               0.2060
+year                         2025.0000
+month                           8.0000
+dayofweek                       4.0000
+lag_1_close_return              0.1465
+lag_5_close_return              0.0644
+lag_20_close_return             0.0877
+gap_open_close_prev_pct         0.0029
+high_low_spread                 0.4600
+open_close_spread               0.2500
+momentum_10d                    0.0850
+---------------------------
+[2025-09-01 18:35:20] Current live price: $174.22
+[2025-09-01 18:35:21] Trend Check: Close: 174.28, SMA200: 138.74. Uptrend: True
+[2025-09-01 18:35:21] Volatility Check: Current ATR: 0.2462, Avg ATR: 0.1829. Normal: True
+[2025-09-01 18:35:21] No strong buy signal. Bot remains patient. Prediction: -1.
+[2025-09-01 18:35:21] --- Cycle End ---
+[2025-09-01 18:35:21] Trading status saved to bot_status.json successfully.
+[2025-09-01 18:37:21] Fetching daily data for long-term trend analysis...
+[2025-09-01 18:37:22] Fetching intraday data for immediate signals...
+[2025-09-01 18:37:22] --- Latest Feature Data ---
+open                          174.0300
+high                          174.2800
+low                           173.8200
+close                         174.2800
+volume                    5049820.0000
+dividends                       0.0000
+stock splits                    0.0000
+volume_change_pct              99.1657
+macd_line                       0.0115
+macd_signal                     0.0304
+macd_diff                      -0.0189
+rsi_14                         55.8277
+atr_14                          0.2462
+bb_hband                      174.4969
+bb_lband                      173.6936
+bb_wband                        0.4614
+sma_20                        174.0953
+daily_range_pct                 0.2639
+volatility_5_std                0.2318
+volatility_20_std               0.2060
+year                         2025.0000
+month                           8.0000
+dayofweek                       4.0000
+lag_1_close_return              0.1465
+lag_5_close_return              0.0644
+lag_20_close_return             0.0877
+gap_open_close_prev_pct         0.0029
+high_low_spread                 0.4600
+open_close_spread               0.2500
+momentum_10d                    0.0850
+---------------------------
+[2025-09-01 18:37:23] Current live price: $174.22
+[2025-09-01 18:37:23] Trend Check: Close: 174.28, SMA200: 138.74. Uptrend: True
+[2025-09-01 18:37:23] Volatility Check: Current ATR: 0.2462, Avg ATR: 0.1829. Normal: True
+[2025-09-01 18:37:23] No strong buy signal. Bot remains patient. Prediction: -1.
+[2025-09-01 18:37:23] --- Cycle End ---
+[2025-09-01 18:37:24] Trading status saved to bot_status.json successfully.
+[2025-09-01 18:39:24] Fetching daily data for long-term trend analysis...
+[2025-09-01 18:39:25] Fetching intraday data for immediate signals...
+[2025-09-01 18:39:26] --- Latest Feature Data ---
+open                          174.0300
+high                          174.2800
+low                           173.8200
+close                         174.2800
+volume                    5049820.0000
+dividends                       0.0000
+stock splits                    0.0000
+volume_change_pct              99.1657
+macd_line                       0.0115
+macd_signal                     0.0304
+macd_diff                      -0.0189
+rsi_14                         55.8277
+atr_14                          0.2462
+bb_hband                      174.4969
+bb_lband                      173.6936
+bb_wband                        0.4614
+sma_20                        174.0953
+daily_range_pct                 0.2639
+volatility_5_std                0.2318
+volatility_20_std               0.2060
+year                         2025.0000
+month                           8.0000
+dayofweek                       4.0000
+lag_1_close_return              0.1465
+lag_5_close_return              0.0644
+lag_20_close_return             0.0877
+gap_open_close_prev_pct         0.0029
+high_low_spread                 0.4600
+open_close_spread               0.2500
+momentum_10d                    0.0850
+---------------------------
+[2025-09-01 18:39:27] Current live price: $174.22
+[2025-09-01 18:39:27] Trend Check: Close: 174.28, SMA200: 138.74. Uptrend: True
+[2025-09-01 18:39:27] Volatility Check: Current ATR: 0.2462, Avg ATR: 0.1829. Normal: True
+[2025-09-01 18:39:27] No strong buy signal. Bot remains patient. Prediction: -1.
+[2025-09-01 18:39:27] --- Cycle End ---
+[2025-09-01 18:39:27] Trading status saved to bot_status.json successfully.
+[2025-09-01 18:41:28] Fetching daily data for long-term trend analysis...
+[2025-09-01 18:41:29] Fetching intraday data for immediate signals...
+[2025-09-01 18:41:30] --- Latest Feature Data ---
+open                          174.0300
+high                          174.2800
+low                           173.8200
+close                         174.2800
+volume                    5049820.0000
+dividends                       0.0000
+stock splits                    0.0000
+volume_change_pct              99.1657
+macd_line                       0.0115
+macd_signal                     0.0304
+macd_diff                      -0.0189
+rsi_14                         55.8277
+atr_14                          0.2462
+bb_hband                      174.4969
+bb_lband                      173.6936
+bb_wband                        0.4614
+sma_20                        174.0953
+daily_range_pct                 0.2639
+volatility_5_std                0.2318
+volatility_20_std               0.2060
+year                         2025.0000
+month                           8.0000
+dayofweek                       4.0000
+lag_1_close_return              0.1465
+lag_5_close_return              0.0644
+lag_20_close_return             0.0877
+gap_open_close_prev_pct         0.0029
+high_low_spread                 0.4600
+open_close_spread               0.2500
+momentum_10d                    0.0850
+---------------------------
+[2025-09-01 18:41:30] Current live price: $174.22
+[2025-09-01 18:41:31] Trend Check: Close: 174.28, SMA200: 138.74. Uptrend: True
+[2025-09-01 18:41:31] Volatility Check: Current ATR: 0.2462, Avg ATR: 0.1829. Normal: True
+[2025-09-01 18:41:31] No strong buy signal. Bot remains patient. Prediction: -1.
+[2025-09-01 18:41:31] --- Cycle End ---
+[2025-09-01 18:41:32] Trading status saved to bot_status.json successfully.
+[2025-09-01 18:43:33] Fetching daily data for long-term trend analysis...
+[2025-09-01 18:43:34] Fetching intraday data for immediate signals...
+[2025-09-01 18:43:35] --- Latest Feature Data ---
+open                          174.0300
+high                          174.2800
+low                           173.8200
+close                         174.2800
+volume                    5049820.0000
+dividends                       0.0000
+stock splits                    0.0000
+volume_change_pct              99.1657
+macd_line                       0.0115
+macd_signal                     0.0304
+macd_diff                      -0.0189
+rsi_14                         55.8277
+atr_14                          0.2462
+bb_hband                      174.4969
+bb_lband                      173.6936
+bb_wband                        0.4614
+sma_20                        174.0953
+daily_range_pct                 0.2639
+volatility_5_std                0.2318
+volatility_20_std               0.2060
+year                         2025.0000
+month                           8.0000
+dayofweek                       4.0000
+lag_1_close_return              0.1465
+lag_5_close_return              0.0644
+lag_20_close_return             0.0877
+gap_open_close_prev_pct         0.0029
+high_low_spread                 0.4600
+open_close_spread               0.2500
+momentum_10d                    0.0850
+---------------------------
+[2025-09-01 18:43:36] Current live price: $174.22
+[2025-09-01 18:43:37] Trend Check: Close: 174.28, SMA200: 138.74. Uptrend: True
+[2025-09-01 18:43:37] Volatility Check: Current ATR: 0.2462, Avg ATR: 0.1829. Normal: True
+[2025-09-01 18:43:37] No strong buy signal. Bot remains patient. Prediction: -1.
+[2025-09-01 18:43:37] --- Cycle End ---
+[2025-09-01 18:43:38] Trading status saved to bot_status.json successfully.
