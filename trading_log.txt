@@ -22538,3 +22538,30 @@ momentum_10d                   0.3300
 [2025-12-12 19:00:01] BUY executed for 768 shares at $175.64.
 [2025-12-12 19:00:01] --- Cycle End ---
 [2025-12-12 19:00:02] Trading status saved to bot_status.json successfully.
+[2025-12-12 22:53:57] --- Algorithmic Trading System Initiated ---
+[2025-12-12 22:53:57] Loading the machine learning model...
+[2025-12-12 22:53:59] Model loaded successfully.
+[2025-12-12 22:53:59] Connecting to Alpaca API...
+[2025-12-12 22:54:00] Connection to Alpaca API successful.
+[2025-12-12 22:54:00] Account Status: ACTIVE
+[2025-12-12 22:54:00] Current Portfolio Equity: $997453.72
+[2025-12-12 22:54:01] --- Daily Performance Summary ---
+[2025-12-12 22:54:01] Date: 2025-12-12
+[2025-12-12 22:54:01] Total Trades: 0
+[2025-12-12 22:54:01] Total P/L: $0.00
+[2025-12-12 22:54:01] Win Rate: 0.00%
+[2025-12-12 22:54:01] Daily High Equity: $997453.72
+[2025-12-12 22:54:01] Daily End Equity: $997453.72
+[2025-12-12 22:54:01] -------------------------------
+[2025-12-12 22:54:02] Performance dashboard generated and saved as performance_dashboard.png
+[2025-12-12 22:54:02] New day detected. Resetting daily statistics.
+[2025-12-12 22:54:02] Less than 10 minutes until market close and no open positions. Halting new trades for the day.
+[2025-12-12 22:54:03] Trading status saved to bot_status.json successfully.
+[2025-12-12 22:56:03] --- Cycle End ---
+[2025-12-12 22:56:04] Trading status saved to bot_status.json successfully.
+[2025-12-12 22:58:04] Less than 10 minutes until market close and no open positions. Halting new trades for the day.
+[2025-12-12 22:58:05] Trading status saved to bot_status.json successfully.
+[2025-12-12 22:59:33] Trading system stopped by the user.
+[2025-12-12 22:59:34] Trading status saved to bot_status.json successfully.
+[2025-12-12 22:59:34] --- Cycle End ---
+[2025-12-12 22:59:34] Trading status saved to bot_status.json successfully.
