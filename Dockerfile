@@ -1,5 +1,6 @@
-# استخدام صورة بايثون الرسمية
-FROM python:3.13.11-slim
+# استخدام صورة Miniconda/Miniforge وهي مثالية للمشاريع العلمية و ML
+# هذه الصورة تحتوي على جميع مكتبات النظام المطلوبة لـ lightgbm و numpy
+FROM mambaorg/miniforge3:23.11.0-1
 
 # تعيين مجلد العمل
 WORKDIR /app
@@ -7,12 +8,11 @@ WORKDIR /app
 # نسخ ملف متطلبات بايثون
 COPY requirements.txt .
 
-# تثبيت مكتبات النظام المفقودة (libgomp1) ثم تثبيت مكتبات بايثون
-RUN apt-get update && \
-    apt-get install -y libgomp1 && \
-    pip install --no-cache-dir -r requirements.txt
+# تثبيت المكتبات باستخدام pip
+# (Miniforge يأتي مع pip)
+RUN pip install --no-cache-dir -r requirements.txt
 
-# نسخ باقي ملفات المشروع
+# نسخ باقي ملفات المشروع (بما في ذلك المودل في core/model)
 COPY . .
 
 # تعريف المنفذ
