@@ -1,6 +1,5 @@
-# استخدام صورة Miniconda/Miniforge وهي مثالية للمشاريع العلمية و ML
-# هذه الصورة تحتوي على جميع مكتبات النظام المطلوبة لـ lightgbm و numpy
-FROM mambaorg/miniforge3:23.11.0-1
+# استخدام صورة Miniconda الرسمية والتي تحتوي على البيئة العلمية المطلوبة
+FROM continuumio/miniconda3
 
 # تعيين مجلد العمل
 WORKDIR /app
@@ -9,14 +8,13 @@ WORKDIR /app
 COPY requirements.txt .
 
 # تثبيت المكتبات باستخدام pip
-# (Miniforge يأتي مع pip)
 RUN pip install --no-cache-dir -r requirements.txt
 
-# نسخ باقي ملفات المشروع (بما في ذلك المودل في core/model)
+# نسخ باقي ملفات المشروع (بما في ذلك المودل)
 COPY . .
 
 # تعريف المنفذ
 EXPOSE 8080
 
-# تحديد أمر البدء الافتراضي (سيعمل كاحتياطي للـ Custom Start Command)
+# تحديد أمر البدء الافتراضي (لضمان تشغيل الروبوت والخادم عبر Custom Command)
 CMD ["gunicorn", "trading_backend.wsgi:application", "--bind", "0.0.0.0:8080"]
