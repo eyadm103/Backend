@@ -1,0 +1,16 @@
+django
+djangorestframework
+pandas
+numpy
+joblib
+alpaca-trade-api
+ta
+matplotlib
+yfinance
+pytz
+gunicorn
+django-cors-headers
+lightgbm
+scikit-learn
+gunicorn
+whitenoise

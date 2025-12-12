@@ -129,6 +129,7 @@ def update_status_json(account_info, positions, daily_stats, current_price, last
             "losses": daily_stats['losses'],
             "total_profit": f"{daily_stats['total_profit']:.4f}",
             "total_loss": f"{daily_stats['total_loss']:.4f}",
+            
             "ticker": None, # Modified: Changed 'symbol' to 'ticker' for clarity
             "qty": "0.0000",
             "entry_price": "0.0000",
@@ -304,7 +305,7 @@ class Command(BaseCommand):
                 if market_open_time:
                     market_close_time = market_open_time.replace(hour=16, minute=0, second=0, microsecond=0)
                     time_to_close = (market_close_time - now).total_seconds()
-                    if time_to_close <= 600 and not api.list_positions():
+                    if time_to_close <= 600 and not api.list_positions() and time_to_close > 0:
                         log_action("Less than 10 minutes until market close and no open positions. Halting new trades for the day.")
                         account_info = api.get_account()
                         positions = api.list_positions()
@@ -439,7 +440,7 @@ class Command(BaseCommand):
                         total_equity = float(account_info.equity)
                         
                         risk_amount = total_equity * settings.RISK_PER_TRADE_PERCENT
-                        stop_loss_distance_per_share = latest_features_series['atr_14'] * settings.SL_MULTIPLIER
+                        stop_loss_distance_per_share = latest_features_series['atr_14'] * 10 * settings.SL_MULTIPLIER 
                         
                         if stop_loss_distance_per_share <= 0:
                             log_action("Warning: Stop-loss distance is zero or negative. Cannot calculate shares. Using a fixed distance.")

@@ -2,6 +2,51 @@
 
 import os
 from pathlib import Path
+from dotenv import load_dotenv # 🚨 1. استيراد dotenv
+
+BASE_DIR = Path(__file__).resolve().parent.parent
+
+# 🚨 2. تحميل متغيرات البيئة من ملف .env (نفترض أنه في المجلد الأب TradingApp/Backend/)
+load_dotenv(os.path.join(BASE_DIR, '.env'))
+
+# 🚨 3. استخدام os.getenv لقراءة المفتاح السري (مفضل لأمان أكبر)
+SECRET_KEY = os.getenv('DJANGO_SECRET_KEY', 'django-insecure-@e^z_!s7a$z6v_7-e43&x6q5b-25@5w5$k3&o+q5)z#r-1(z*^')
+DEBUG = os.getenv("DEBUG", "True") == "True" # 🚨 4. قراءة DEBUG من .env
+ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "*").split(',') # 🚨 5. قراءة ALLOWED_HOSTS من .env
+
+INSTALLED_APPS = [
+    'corsheaders',
+    'django.contrib.admin',
+    'django.contrib.auth',
+    'django.contrib.contenttypes',
+    'django.contrib.sessions',
+    'django.contrib.messages',
+    'django.contrib.staticfiles',
+    'rest_framework',
+    'core',
+    'schwab_api', # ✅ موجودة بالفعل
+    
+]
+
+# ... (باقي كود MIDDLEWARE, TEMPLATES, DATABASES كما هو)
+
+# ... (جزء API Keys الأخرى - تركناها كما هي)
+
+# 🚨 6. إضافة متغيرات شواب والأمان (يجب أن تقرأ من .env)
+# تأكد من أن هذه الأسماء مطابقة لما وضعته في ملف .env
+SCHWAB_CLIENT_ID = os.getenv("SCHWAB_CLIENT_ID")
+SCHWAB_CLIENT_SECRET = os.getenv("SCHWAB_CLIENT_SECRET")
+SCHWAB_REDIRECT_URI = os.getenv("REDIRECT_URI") # تم تغيير الاسم ليكون أوضح
+ENCRYPTION_KEY = os.getenv("ENCRYPTION_KEY")
+
+
+# ... (باقي الإعدادات كما هي: API_KEY, API_SECRET, BASE_URL, GLOBAL_STOCK_TICKER, إلخ)
+
+
+# trading_backend/settings.py
+
+import os
+from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -19,6 +64,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'core',
+    'schwab_api',
+    
 
 ]
 
@@ -75,28 +122,29 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
+CORS_ALLOW_ALL_ORIGINS = True
 
 LANGUAGE_CODE = 'en-us'
-TIME_ZONE = 'America/New_York'  # تم تعديل المنطقة الزمنية لتتوافق مع البورصة
+TIME_ZONE = 'America/New_York'  
 USE_I18N = True
 USE_TZ = True
 
 STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-API_KEY = os.getenv('APCA_API_KEY_ID', 'PKKIQ29YEFSU9ECSUGJM')
-API_SECRET = os.getenv('APCA_API_SECRET_KEY', 'L3PUzKPTddIUgIc0bIiProTTKmwwTTeymX7MivxB')
+API_KEY = os.getenv('APCA_API_KEY_ID', 'PKJAKXWLFBRV2EJYP5OM72I6ZW')
+API_SECRET = os.getenv('APCA_API_SECRET_KEY', 'HZDX9TQQKx2ATv7g1VeECyZDqNCJDTFdBtF3C7XwaH1M')
 BASE_URL = os.getenv('APCA_API_BASE_URL', 'https://paper-api.alpaca.markets') # For paper trading
 
 GLOBAL_STOCK_TICKER = 'NVDA'
-MAX_EQUITY_PER_TRADE = 0.20
-RISK_PER_TRADE_PERCENT = 0.005 
-SL_MULTIPLIER = 2.5
-TP_MULTIPLIER = 1.5
-MAX_TRADES_PER_DAY = 20
+MAX_EQUITY_PER_TRADE = 0.80
+RISK_PER_TRADE_PERCENT = 0.005
+SL_MULTIPLIER = 1.25
+TP_MULTIPLIER = 0.85
+MAX_TRADES_PER_DAY = 25
 MAX_DAILY_LOSS_PERCENT = 0.10
 
 MODELS_DIR = os.path.join(BASE_DIR, 'core/model')
-MODEL_FILENAME = 'final_model.pkl' # Make sure this matches your model filename
+MODEL_FILENAME = 'final_model.pkl' 
 MODEL_FEATURE_NAMES = [
     'macd_line', 'macd_signal', 'macd_diff', 'bb_hband', 'bb_lband', 'bb_wband',
     'sma_20', 'rsi_14', 'atr_14', 'daily_range_pct', 'volatility_5_std',
