@@ -1,0 +1,11 @@
+# Ignore Python virtual environments
+venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Ignore Django local settings
+*.sqlite3
+*.log
+.env
