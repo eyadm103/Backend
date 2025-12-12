@@ -14,3 +14,4 @@ lightgbm
 scikit-learn
 gunicorn
 whitenoise
+python-dotenv
