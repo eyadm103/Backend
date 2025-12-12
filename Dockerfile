@@ -1,5 +1,5 @@
 # استخدام صورة Miniconda الرسمية والتي تحتوي على البيئة العلمية المطلوبة
-FROM continuumio/miniconda3
+FROM continuumio/miniconda3:latest
 
 # تعيين مجلد العمل
 WORKDIR /app
