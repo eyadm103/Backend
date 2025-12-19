@@ -167,7 +167,7 @@ def get_latest_price_from_alpaca(api, ticker):
         log_action(f"Error fetching latest price from Alpaca API: {e}")
         return None
 
-def get_daily_data_for_sma(ticker, period='1y', interval='1d'):
+def get_daily_data_for_sma(ticker, period='250d', interval='1d'):
     try:
         df = yf.Ticker(ticker).history(period=period, interval=interval)
         if df.empty:
@@ -180,7 +180,7 @@ def get_daily_data_for_sma(ticker, period='1y', interval='1d'):
         log_action(f"Error fetching daily data from Yahoo Finance: {e}")
         return pd.DataFrame()
 
-def get_latest_intraday_data(ticker, period='60d', interval='2m'):
+def get_latest_intraday_data(ticker, period='5d', interval='2m'):
     try:
         df = yf.Ticker(ticker).history(period=period, interval=interval)
         if df.empty:
@@ -312,7 +312,7 @@ class Command(BaseCommand):
                         current_price = get_latest_price_from_alpaca(api, settings.GLOBAL_STOCK_TICKER)
                         # Modified: Passed last_action and current_price
                         update_status_json(account_info, positions, daily_stats, current_price, last_action)
-                        time.sleep(120)
+                        time.sleep(30)
                         continue
                 
                 if not market_is_open:
@@ -322,7 +322,7 @@ class Command(BaseCommand):
                     current_price = get_latest_price_from_alpaca(api, settings.GLOBAL_STOCK_TICKER)
                     # Modified: Passed last_action and current_price
                     update_status_json(account_info, positions, daily_stats, current_price, last_action)
-                    time.sleep(120)
+                    time.sleep(30)
                     continue
                     
                 account_info = api.get_account()
@@ -337,7 +337,7 @@ class Command(BaseCommand):
                     current_price = get_latest_price_from_alpaca(api, settings.GLOBAL_STOCK_TICKER)
                     # Modified: Passed last_action and current_price
                     update_status_json(account_info, positions, daily_stats, current_price, last_action)
-                    time.sleep(120)
+                    time.sleep(30)
                     continue
 
                 log_action("Fetching daily data for long-term trend analysis...")
@@ -348,7 +348,7 @@ class Command(BaseCommand):
                     current_price = get_latest_price_from_alpaca(api, settings.GLOBAL_STOCK_TICKER)
                     # Modified: Passed last_action and current_price
                     update_status_json(account_info, positions, daily_stats, current_price, last_action)
-                    time.sleep(120)
+                    time.sleep(30)
                     continue
                 
                 sma_200 = SMAIndicator(close=daily_df['close'], window=200).sma_indicator().iloc[-1]
@@ -364,7 +364,7 @@ class Command(BaseCommand):
                     current_price = get_latest_price_from_alpaca(api, settings.GLOBAL_STOCK_TICKER)
                     # Modified: Passed last_action and current_price
                     update_status_json(account_info, positions, daily_stats, current_price, last_action)
-                    time.sleep(120)
+                    time.sleep(30)
                     continue
                 
                 log_action(f"--- Latest Feature Data ---\n{latest_features_series.to_string()}\n---------------------------")
@@ -375,7 +375,7 @@ class Command(BaseCommand):
                     positions = api.list_positions()
                     # Modified: Passed last_action and current_price
                     update_status_json(account_info, positions, daily_stats, current_price, last_action)
-                    time.sleep(120)
+                    time.sleep(30)
                     continue
 
                 log_action(f"Current live price: ${current_price:.2f}")
@@ -388,7 +388,7 @@ class Command(BaseCommand):
                         log_action(f"Daily trade limit reached. No more trades today.")
                         # Modified: Passed last_action and current_price
                         update_status_json(account_info, positions, daily_stats, current_price, last_action)
-                        time.sleep(120)
+                        time.sleep(30)
                         continue
                     
                     features_for_prediction_df = pd.DataFrame([latest_features_series])
@@ -421,8 +421,10 @@ class Command(BaseCommand):
                             log_action("Could not calculate 20-period ATR average. Volatility check skipped.")
                     except (IndexError, KeyError):
                         log_action("Insufficient data for ATR average. Volatility check skipped.")
+                        
+                    avg_vol = intraday_df['volume'].tail(5).mean()
 
-                    buy_signal = (is_model_bullish or is_indicators_bullish) and is_in_uptrend and is_volatility_normal
+                    buy_signal = (is_model_bullish or is_indicators_bullish) and is_in_uptrend and is_volatility_normal and (latest_features_series['volume'] > avg_vol)
 
                     buy_reason = "No signal"
                     if buy_signal:
@@ -477,54 +479,48 @@ class Command(BaseCommand):
                         log_action(f"No strong buy signal. Bot remains patient. Prediction: {prediction}.")
 
                 # --- Sell Logic ---
+                # --- Sell Logic (المعدل للأمان وحجز الأرباح) ---
                 else:
                     position = positions[0]
                     entry_price = float(position.avg_entry_price)
+                    qty_to_close = float(position.qty)
                     
-                    try:
-                        atr_value = latest_features_series['atr_14']
-                        if pd.isna(atr_value):
-                            log_action("ATR is NA. Using a fixed stop-loss distance.")
-                            atr_value = 0.50 
-                    except KeyError:
-                        log_action("ATR feature not available. Using a fixed stop-loss.")
-                        atr_value = 0.50 
+                    # جلب الـ ATR أو استخدام قيمة افتراضية للأمان
+                    atr_value = latest_features_series.get('atr_14', 0.50)
+                    if pd.isna(atr_value): atr_value = 0.50
 
-                    initial_stop_loss = entry_price - (atr_value * settings.SL_MULTIPLIER)
-                    new_trailing_stop = current_price - (atr_value * settings.SL_MULTIPLIER)
-                    breakeven_stop_loss = entry_price if current_price > entry_price else -np.inf
                     current_profit_pct = ((current_price - entry_price) / entry_price) * 100
                     highest_profit_pct = max(highest_profit_pct, current_profit_pct)
-                    
-                    is_profit_dropping = False
-                    if current_profit_pct > 0.05:
-                        profit_drop_limit = highest_profit_pct * 0.20
-                        if (highest_profit_pct - current_profit_pct) > profit_drop_limit:
-                            is_profit_dropping = True
 
-                    trailing_stop_price = max(initial_stop_loss, breakeven_stop_loss, new_trailing_stop)
+                    # 1. حساب الأهداف (بناءً على الـ Multipliers الجديدة في settings)
+                    # الـ Stop Loss الأساسي
+                    initial_stop_price = entry_price - (atr_value * settings.SL_MULTIPLIER)
+                    # هدف جني الأرباح (Take Profit)
                     take_profit_price = entry_price + (atr_value * settings.TP_MULTIPLIER)
-                    
-                    log_action(f"Position: P&L: {current_profit_pct:.2f}%, Highest P&L: {highest_profit_pct:.2f}%, Trail SL: ${trailing_stop_price:.2f}, TP: ${take_profit_price:.2f}")
 
-                    features_for_prediction_df = pd.DataFrame([latest_features_series])
-                    features_for_prediction_df = features_for_prediction_df[settings.MODEL_FEATURE_NAMES]
-                    prediction = final_model.predict(features_for_prediction_df)[0]
-                    
-                    bearish_macd_crossover = latest_features_series['macd_line'] < latest_features_series['macd_signal']
+                    # 2. نظام تأمين "نقطة التعادل" (Break-even)
+                    # لو السعر طلع وحقق ربح 0.1%، الستوب لوز بيتحرك لـ فوق سعر الدخول بسنة
+                    trailing_stop_price = initial_stop_price
+                    if current_profit_pct >= 0.10:
+                        breakeven_price = entry_price + (atr_value * 0.1) 
+                        # التريلينج ستوب الجديد هو السعر اللي يضمن إننا منخسرش
+                        trailing_stop_price = max(initial_stop_price, breakeven_price)
 
+                    log_action(f"Position: P&L: {current_profit_pct:.2f}%, Trail SL: ${trailing_stop_price:.2f}, TP: ${take_profit_price:.2f}")
+
+                    # 3. اتخاذ قرار البيع
                     sell_reason = None
-                    if prediction == 0: sell_reason = "Model predicts SELL"
-                    elif current_price >= take_profit_price: sell_reason = "Take Profit target reached"
-                    elif current_price <= trailing_stop_price: sell_reason = "Trailing Stop-Loss hit"
-                    elif is_profit_dropping: sell_reason = "Profit Retracement limit hit"
-                    elif current_profit_pct > 0 and bearish_macd_crossover: sell_reason = "MACD Bearish Crossover (Protecting Profit)"
                     
+                    if current_price >= take_profit_price:
+                        sell_reason = "Target Reached (Take Profit)"
+                    elif current_price <= trailing_stop_price:
+                        sell_reason = "Stop Loss/Breakeven Hit (Safety Exit)"
+                    elif current_profit_pct > 0.05 and final_model.predict(pd.DataFrame([latest_features_series])[settings.MODEL_FEATURE_NAMES])[0] == 0:
+                        sell_reason = "Model Flip (Exit with small profit)"
+
                     if sell_reason:
                         log_action(f"SELL signal: {sell_reason}. Closing at ${current_price:.2f}.")
-                        
                         try:
-                            qty_to_close = float(position.qty)
                             api.close_position(settings.GLOBAL_STOCK_TICKER)
                             log_action("Position closed successfully.")
                             
@@ -535,7 +531,8 @@ class Command(BaseCommand):
                             else:
                                 daily_stats['losses'] += 1
                                 daily_stats['total_loss'] += pl
-                            last_action = "Sell" # Added: Update last_action
+                            
+                            last_action = "Sell"
                             highest_profit_pct = 0.0 
                         except Exception as e:
                             log_action(f"API error during sell order: {e}")
@@ -571,4 +568,4 @@ class Command(BaseCommand):
                     update_status_json(account_info, positions, daily_stats, current_price, last_action)
                 except Exception as e:
                     log_action(f"Error during final JSON update: {e}")
-                time.sleep(120)
+                time.sleep(30)

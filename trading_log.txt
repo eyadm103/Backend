@@ -22565,3 +22565,46 @@ momentum_10d                   0.3300
 [2025-12-12 22:59:34] Trading status saved to bot_status.json successfully.
 [2025-12-12 22:59:34] --- Cycle End ---
 [2025-12-12 22:59:34] Trading status saved to bot_status.json successfully.
+[2025-12-19 15:19:39] --- Algorithmic Trading System Initiated ---
+[2025-12-19 15:19:39] Loading the machine learning model...
+[2025-12-19 15:19:45] Model loaded successfully.
+[2025-12-19 15:19:45] Connecting to Alpaca API...
+[2025-12-19 15:19:46] Connection to Alpaca API successful.
+[2025-12-19 15:19:46] Account Status: ACTIVE
+[2025-12-19 15:19:46] Current Portfolio Equity: $988312.36
+[2025-12-19 15:19:47] --- Daily Performance Summary ---
+[2025-12-19 15:19:47] Date: 2025-12-19
+[2025-12-19 15:19:47] Total Trades: 0
+[2025-12-19 15:19:47] Total P/L: $0.00
+[2025-12-19 15:19:47] Win Rate: 0.00%
+[2025-12-19 15:19:47] Daily High Equity: $988312.36
+[2025-12-19 15:19:47] Daily End Equity: $988312.36
+[2025-12-19 15:19:47] -------------------------------
+[2025-12-19 15:19:48] Performance dashboard generated and saved as performance_dashboard.png
+[2025-12-19 15:19:48] New day detected. Resetting daily statistics.
+[2025-12-19 15:19:48] Market is currently closed. Checking again in 2 minutes.
+[2025-12-19 15:19:49] Trading status saved to bot_status.json successfully.
+[2025-12-19 15:20:19] --- Cycle End ---
+[2025-12-19 15:20:19] Trading status saved to bot_status.json successfully.
+[2025-12-19 15:20:49] Market is currently closed. Checking again in 2 minutes.
+[2025-12-19 15:20:50] Trading status saved to bot_status.json successfully.
+[2025-12-19 15:21:20] --- Cycle End ---
+[2025-12-19 15:21:20] Trading status saved to bot_status.json successfully.
+[2025-12-19 15:21:50] Market is currently closed. Checking again in 2 minutes.
+[2025-12-19 15:21:51] Trading status saved to bot_status.json successfully.
+[2025-12-19 15:22:21] --- Cycle End ---
+[2025-12-19 15:22:21] Trading status saved to bot_status.json successfully.
+[2025-12-19 15:22:51] Market is currently closed. Checking again in 2 minutes.
+[2025-12-19 15:22:52] Trading status saved to bot_status.json successfully.
+[2025-12-19 15:23:22] --- Cycle End ---
+[2025-12-19 15:23:22] Trading status saved to bot_status.json successfully.
+[2025-12-19 15:23:52] Market is currently closed. Checking again in 2 minutes.
+[2025-12-19 15:23:53] Trading status saved to bot_status.json successfully.
+[2025-12-19 15:24:23] --- Cycle End ---
+[2025-12-19 15:24:23] Trading status saved to bot_status.json successfully.
+[2025-12-19 15:24:53] Market is currently closed. Checking again in 2 minutes.
+[2025-12-19 15:24:53] Trading status saved to bot_status.json successfully.
+[2025-12-19 15:24:55] Trading system stopped by the user.
+[2025-12-19 15:24:56] Trading status saved to bot_status.json successfully.
+[2025-12-19 15:24:56] --- Cycle End ---
+[2025-12-19 15:24:56] Trading status saved to bot_status.json successfully.
