@@ -358,6 +358,7 @@ class Command(BaseCommand):
                 
                 latest_features_series = calculate_features(intraday_df)
 
+
                 if latest_features_series is None:
                     log_action("Failed to calculate features. Skipping.")
                     positions = api.list_positions()
@@ -382,75 +383,73 @@ class Command(BaseCommand):
 
                 positions = api.list_positions()
 
-                # --- Buy Logic ---
+                # --- Buy Logic (النسخة الهجين: ذكاء اصطناعي + مؤشرات فنية) ---
                 if not positions:
                     if daily_stats['trades'] >= settings.MAX_TRADES_PER_DAY:
                         log_action(f"Daily trade limit reached. No more trades today.")
-                        # Modified: Passed last_action and current_price
                         update_status_json(account_info, positions, daily_stats, current_price, last_action)
                         time.sleep(30)
                         continue
                     
+                    # 1. جلب توقع الموديل
                     features_for_prediction_df = pd.DataFrame([latest_features_series])
                     features_for_prediction_df = features_for_prediction_df[settings.MODEL_FEATURE_NAMES]
                     prediction = final_model.predict(features_for_prediction_df)[0]
                     
-                    is_model_bullish = prediction == 1
+                    # 2. تعريف الشروط الفنية (بناءً على البيانات اللحظية)
+                    is_model_bullish = (prediction == 1)
                     
+                    # شرط المؤشرات الفنية (ده اللي هيخلي البوت يشتغل حتى لو الموديل خايف)
                     is_indicators_bullish = (
-                        (latest_features_series['macd_line'] > latest_features_series['macd_signal']) and
-                        (latest_features_series['rsi_14'] < 70) and
-                        (latest_features_series['momentum_10d'] > 0)
+                        latest_features_series['macd_diff'] > 0 and 
+                        latest_features_series['rsi_14'] < 65 and 
+                        latest_features_series['close'] > sma_200 and # التريند العام صاعد
+                        current_price > (latest_features_series['sma_20'] * 0.995) # السعر قريب من المتوسط
                     )
 
-                    is_in_uptrend = latest_features_series['close'] > sma_200
-                    log_action(f"Trend Check: Close: {latest_features_series['close']:.2f}, SMA200: {sma_200:.2f}. Uptrend: {is_in_uptrend}")
-
+                    # 3. فحص الفولتيلتي (ATR) للتأكد إن الحركة مش جنونية
                     is_volatility_normal = True 
                     try:
                         temp_atr = average_true_range(
                             high=intraday_df['high'], low=intraday_df['low'], close=intraday_df['close'], window=14
                         )
                         atr_20_avg = temp_atr.rolling(window=20).mean().iloc[-1]
-                        
                         if not pd.isna(atr_20_avg) and 'atr_14' in latest_features_series:
                             current_atr = latest_features_series['atr_14']
-                            is_volatility_normal = (current_atr > atr_20_avg * 0.8) and (current_atr < atr_20_avg * 1.5)
-                            log_action(f"Volatility Check: Current ATR: {current_atr:.4f}, Avg ATR: {atr_20_avg:.4f}. Normal: {is_volatility_normal}")
-                        else:
-                            log_action("Could not calculate 20-period ATR average. Volatility check skipped.")
-                    except (IndexError, KeyError):
-                        log_action("Insufficient data for ATR average. Volatility check skipped.")
-                        
-                    avg_vol = intraday_df['volume'].tail(5).mean()
+                            # السماح بالتداول لو الفولتيلتي في النطاق الطبيعي
+                            is_volatility_normal = (current_atr > atr_20_avg * 0.5) and (current_atr < atr_20_avg * 2.5)
+                    except Exception as e:
+                        log_action(f"Volatility check error: {e}")
 
-                    buy_signal = (is_model_bullish or is_indicators_bullish) and is_in_uptrend and is_volatility_normal and (latest_features_series['volume'] > avg_vol)
+                    # 4. اتخاذ القرار النهائي
+                    # يشتري لو (الموديل قال شراء) "أو" (المؤشرات ممتازة) + شرط الفولتيلتي
+                    buy_signal = (is_model_bullish or is_indicators_bullish) and is_volatility_normal
 
-                    buy_reason = "No signal"
+                    # 5. تسجيل الأسباب في حالة عدم وجود إشارة
+                    if not buy_signal:
+                        reasons = []
+                        if not is_model_bullish: reasons.append("Model (Not Bullish)")
+                        if not is_indicators_bullish: reasons.append("Technicals (Weak)")
+                        if not is_volatility_normal: reasons.append("Volatility (High/Low)")
+                        log_action(f"No Strong Buy Signal. Waiting for: {', '.join(reasons)}. AI Pred: {prediction}")
+
+                    # 6. تنفيذ الأوردر
                     if buy_signal:
-                        if is_model_bullish and is_indicators_bullish:
-                            buy_reason = "Model and Strong Technical Indicators"
-                        elif is_model_bullish:
-                            buy_reason = "Model Prediction"
-                        elif is_indicators_bullish:
-                            buy_reason = "Strong Technical Indicators"
-
-                    if buy_signal:
-                        log_action(f"BUY signal received. Reason: {buy_reason}. Calculating position size...")
-                        
+                        # تحديد السبب بدقة للـ Log
+                        applied_reason = "AI Prediction" if is_model_bullish else "Strong Technical Indicators"
+                        log_action(f"🚀 BUY signal received! Reason: {applied_reason}. Calculating size...")
+                                                
                         account_info = api.get_account()
                         total_equity = float(account_info.equity)
                         
                         risk_amount = total_equity * settings.RISK_PER_TRADE_PERCENT
-                        stop_loss_distance_per_share = latest_features_series['atr_14'] * 10 * settings.SL_MULTIPLIER 
+                        stop_loss_distance_per_share = latest_features_series['atr_14'] * settings.SL_MULTIPLIER 
                         
                         if stop_loss_distance_per_share <= 0:
-                            log_action("Warning: Stop-loss distance is zero or negative. Cannot calculate shares. Using a fixed distance.")
                             stop_loss_distance_per_share = current_price * 0.01
 
                         calculated_shares = int(risk_amount / stop_loss_distance_per_share)
-                        log_action(f"Dynamic risk calculation: Risk ${risk_amount:.2f} / SL Dist ${stop_loss_distance_per_share:.2f} = {calculated_shares} shares.")
-
+                        
                         max_dollar_amount_per_trade = total_equity * settings.MAX_EQUITY_PER_TRADE
                         max_shares_by_cap = int(max_dollar_amount_per_trade / current_price) if current_price > 0 else 0
                         max_shares_by_cash = int(float(account_info.cash) / current_price) if current_price > 0 else 0
@@ -458,7 +457,6 @@ class Command(BaseCommand):
                         shares_to_buy = min(calculated_shares, max_shares_by_cap, max_shares_by_cash)
                         
                         if shares_to_buy > 0:
-                            log_action(f"Final shares to buy after capping: {shares_to_buy} shares.")
                             try:
                                 api.submit_order(
                                     symbol=settings.GLOBAL_STOCK_TICKER,
@@ -468,18 +466,15 @@ class Command(BaseCommand):
                                     time_in_force='day'
                                 )
                                 daily_stats['trades'] += 1
-                                last_action = "Buy" # Added: Update last_action
-                                log_action(f"BUY executed for {shares_to_buy} shares at ${current_price:.2f}.")
+                                last_action = f"Buy ({applied_reason})"
+                                log_action(f"✅ BUY executed: {shares_to_buy} shares at ${current_price:.2f}.")
                                 last_trade_date = now.date()
                             except Exception as e:
-                                log_action(f"API error during buy order: {e}")
+                                log_action(f"❌ API error during buy order: {e}")
                         else:
-                            log_action("Calculated shares to buy is zero. Not enough capital or risk parameters too tight.")
-                    else:
-                        log_action(f"No strong buy signal. Bot remains patient. Prediction: {prediction}.")
+                            log_action("Buy signal exists but calculated shares are 0.")
 
                 # --- Sell Logic ---
-                # --- Sell Logic (المعدل للأمان وحجز الأرباح) ---
                 else:
                     position = positions[0]
                     entry_price = float(position.avg_entry_price)
@@ -489,42 +484,52 @@ class Command(BaseCommand):
                     atr_value = latest_features_series.get('atr_14', 0.50)
                     if pd.isna(atr_value): atr_value = 0.50
 
-                    current_profit_pct = ((current_price - entry_price) / entry_price) * 100
+                    # سحب النسبة الحقيقية من محفظتك في Alpaca
+                    current_profit_pct = float(position.unrealized_plpc) * 100 
+
+                    # --- تحديث أعلى ربح تم الوصول إليه (لشرط الندم) ---
                     highest_profit_pct = max(highest_profit_pct, current_profit_pct)
 
-                    # 1. حساب الأهداف (بناءً على الـ Multipliers الجديدة في settings)
-                    # الـ Stop Loss الأساسي
+                    # 1. حساب الأهداف الأساسية
                     initial_stop_price = entry_price - (atr_value * settings.SL_MULTIPLIER)
-                    # هدف جني الأرباح (Take Profit)
                     take_profit_price = entry_price + (atr_value * settings.TP_MULTIPLIER)
 
                     # 2. نظام تأمين "نقطة التعادل" (Break-even)
-                    # لو السعر طلع وحقق ربح 0.1%، الستوب لوز بيتحرك لـ فوق سعر الدخول بسنة
                     trailing_stop_price = initial_stop_price
                     if current_profit_pct >= 0.10:
                         breakeven_price = entry_price + (atr_value * 0.1) 
-                        # التريلينج ستوب الجديد هو السعر اللي يضمن إننا منخسرش
                         trailing_stop_price = max(initial_stop_price, breakeven_price)
 
-                    log_action(f"Position: P&L: {current_profit_pct:.2f}%, Trail SL: ${trailing_stop_price:.2f}, TP: ${take_profit_price:.2f}")
+                    log_action(f"Position (SYNCED): P&L: {current_profit_pct:.2f}%, Max P&L: {highest_profit_pct:.2f}%, SL: ${trailing_stop_price:.2f}, TP: ${take_profit_price:.2f}")
 
-                    # 3. اتخاذ قرار البيع
+                    # 3. اتخاذ قرار البيع (المنطق المعدل)
                     sell_reason = None
+                    profit_drop = highest_profit_pct - current_profit_pct
+
+                    if highest_profit_pct >= 0.1 and profit_drop >= 0.10:
+                     sell_reason = f"Profit Protection: Peak {highest_profit_pct:.2f}% dropped to {current_profit_pct:.2f}%"
                     
-                    if current_price >= take_profit_price:
+                    # ب- الهدف النهائي (Take Profit)
+                    elif current_price >= take_profit_price:
                         sell_reason = "Target Reached (Take Profit)"
+
+                    # ج- وقف الخسارة أو نقطة التعادل
                     elif current_price <= trailing_stop_price:
                         sell_reason = "Stop Loss/Breakeven Hit (Safety Exit)"
-                    elif current_profit_pct > 0.05 and final_model.predict(pd.DataFrame([latest_features_series])[settings.MODEL_FEATURE_NAMES])[0] == 0:
-                        sell_reason = "Model Flip (Exit with small profit)"
 
+                    # د- إشارة الموديل (Model Flip)
+                    elif current_profit_pct > 0.15 and final_model.predict(pd.DataFrame([latest_features_series])[settings.MODEL_FEATURE_NAMES])[0] == 0:
+                        sell_reason = "Model Flip (Securing decent profit)"
+
+                    # --- تنفيذ عملية البيع ---
                     if sell_reason:
                         log_action(f"SELL signal: {sell_reason}. Closing at ${current_price:.2f}.")
                         try:
                             api.close_position(settings.GLOBAL_STOCK_TICKER)
                             log_action("Position closed successfully.")
                             
-                            pl = (current_price - entry_price) * qty_to_close
+                            # تسجيل الإحصائيات
+                            pl = float(position.unrealized_pl) 
                             if pl >= 0:
                                 daily_stats['wins'] += 1
                                 daily_stats['total_profit'] += pl
@@ -532,6 +537,7 @@ class Command(BaseCommand):
                                 daily_stats['losses'] += 1
                                 daily_stats['total_loss'] += pl
                             
+                            # تصفير المتغيرات للدورة القادمة
                             last_action = "Sell"
                             highest_profit_pct = 0.0 
                         except Exception as e:
