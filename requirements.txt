@@ -1,4 +1,3 @@
-fuck-railway
 django
 djangorestframework
 pandas
